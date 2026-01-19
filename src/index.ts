@@ -5,12 +5,6 @@ export class ThoughtVisualizer extends HTMLElement {
     private _graph: ThoughtGraph;
     private _container: HTMLDivElement;
 
-    static {
-        if (!customElements.get('thought-visualizer')) {
-            customElements.define('thought-visualizer', this);
-        }
-    }
-
     constructor(){
         super();
         this.attachShadow({ mode: "open" });
@@ -98,4 +92,8 @@ export class ThoughtVisualizer extends HTMLElement {
         `;
         return style;
     }
+}
+
+if (!customElements.get('thought-visualizer')) {
+    customElements.define('thought-visualizer', ThoughtVisualizer);
 }
