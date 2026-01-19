@@ -47,13 +47,16 @@ export function parseVault(files: TGNoteFile[]){
         }
     });
 
-    
-
     return crossLinkNodes({ nodes, links });
 }
 
 function crossLinkNodes(data:TGData){
-     data.links.forEach(link => {
+    if(data.links.length === 0){
+        data.nodes.forEach(node => node.links = []);
+        return data;
+    }
+        
+    data.links.forEach(link => {
         const a = data.nodes.find(n => n.id == link.source);
         const b = data.nodes.find(n => n.id == link.target);
 
@@ -62,6 +65,5 @@ function crossLinkNodes(data:TGData){
         a.links.push(link);
         b.links.push(link);
     });
-
     return data;
 }

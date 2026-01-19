@@ -90,7 +90,9 @@ export class ThoughtGraph extends ForceGraph<TGNode, TGLink> {
 
             if (node) {
                 this.highlightNodes.add(node);
-                node.links.forEach(link => this.highlightLinks.add(link));
+                
+                if(node.links)
+                    node.links.forEach(link => this.highlightLinks.add(link));
             }
 
             if(callback)
