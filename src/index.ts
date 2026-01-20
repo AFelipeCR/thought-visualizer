@@ -1,4 +1,4 @@
-import { OnClickTGListeners, TGNode, TGNoteFile, TGStyle, ThoughtGraph } from "./tg-interfaces";
+import { OnClickTGListeners, TGNoteFile, TGStyle, ThoughtGraph } from "./tg-interfaces";
 import { parseVault } from "./parser";
 
 export class ThoughtVisualizer extends HTMLElement {
@@ -13,7 +13,7 @@ export class ThoughtVisualizer extends HTMLElement {
         this._container.style.width = "100%";
         this._container.style.height = "100%";
 
-        this.shadowRoot?.appendChild(this.getTooltipStyle());
+        this.shadowRoot?.appendChild(this.getTooltipStyle() as Node);
         this.shadowRoot?.appendChild(this.getCanvasStyle());
         this.shadowRoot?.appendChild(this._container);
 
@@ -39,10 +39,10 @@ export class ThoughtVisualizer extends HTMLElement {
         if(backgroundColor)
             this._container.style.backgroundColor = backgroundColor;
         
-        const data = this._graph.graphData();
-        
         if(defaultColor)
             this._graph.defaultColor(defaultColor);
+        
+        const data = this._graph.graphData();
 
         const dColor = this._graph.defaultColor() as string;
 
@@ -68,16 +68,23 @@ export class ThoughtVisualizer extends HTMLElement {
 
     set onClickListeners(listeners: OnClickTGListeners){
         const nodes = this._graph.graphData().nodes;
+        if(nodes)
         Object.entries(listeners).forEach(val => {
             const [id, listener] = val;
-            nodes.find(node => node.id == id).clickData.callback = listener;
+            const node = nodes.find(node => node.id == id);
+            if(node && node.clickData)
+                node.clickData.callback = listener;
         })
     }
 
     private getTooltipStyle(){
         const injectedStyle = Array.from(document.head.querySelectorAll('style'))
         .find(style => style.textContent?.includes('.float-tooltip-kap'));
-        return injectedStyle.cloneNode(true);
+        
+        if(injectedStyle)
+            return injectedStyle.cloneNode(true);
+
+        return null;
     }
 
     private getCanvasStyle() {
@@ -93,6 +100,8 @@ export class ThoughtVisualizer extends HTMLElement {
         return style;
     }
 }
+
+export * from './tg-interfaces';
 
 if (!customElements.get('thought-visualizer')) {
     customElements.define('thought-visualizer', ThoughtVisualizer);

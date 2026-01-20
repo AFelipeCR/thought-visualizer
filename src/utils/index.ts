@@ -1,4 +1,4 @@
-export const lightenColor = (color: string, factor) => {
+export const lightenColor = (color: string, factor:number) => {
     let r,g,b;
     if(color.charAt(0) === "#")
         [r,g,b] = hexToRGB(color);
@@ -44,7 +44,7 @@ export const rgbStringToHex = (rgb: string) => {
     return rgbToHex(r, g, b);
 }
 
-export const rgbToHex = (r, g, b) => {
+export const rgbToHex = (r:number, g:number, b:number) => {
     return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
 }
 

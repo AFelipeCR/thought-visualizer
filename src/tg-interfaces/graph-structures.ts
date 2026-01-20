@@ -12,6 +12,8 @@ export type OnClickTGListeners = {
     [key: string]: OnClickTGListener;
 };
 
+type tgNodeHoverCallback = (node: TGNode | null, previousNode: TGNode | null) => void;
+
 export interface TGNode extends NodeObject {
     id: string;
     title?: string;
@@ -24,6 +26,7 @@ export interface TGNode extends NodeObject {
             target?: "_blank" | "_self";
         }
     };
+    links:TGLink[];
     [key: string]: any;
 }
 
@@ -40,7 +43,7 @@ interface TGCanvasOptions {
     hoverColor?: string
 }
 
-type TGCanvasCustomRenderFn = (options?:TGCanvasOptions) => void;
+type TGCanvasCustomRenderFn = (options:TGCanvasOptions) => void;
 
 export interface TGData extends GraphData<TGNode, TGLink> {}
 
@@ -49,8 +52,8 @@ export class ThoughtGraph extends ForceGraph<TGNode, TGLink> {
 
     private readonly HOVER_COLOR = "rgb(32, 91, 216)";
     private readonly DEFAULT_COLOR = "rgb(195, 200, 211)";
-    private _hoverColor: string;
-    private _defaultColor: string;
+    private _hoverColor!: string;
+    private _defaultColor!: string;
     
     private readonly highlightNodes = new Set<TGNode>();
     private readonly highlightLinks = new Set<TGLink>();
@@ -82,7 +85,7 @@ export class ThoughtGraph extends ForceGraph<TGNode, TGLink> {
     /* TG Methods */
 
     onTGNodeHover(callback?: (node: TGNode, previousNode: TGNode) => void): ThoughtGraph {
-        const cb: (node: TGNode, previousNode: TGNode) => void = (node, previousNode) => {
+        const cb: tgNodeHoverCallback = (node, previousNode) => {
             this.highlightNodes.clear();
             this.highlightLinks.clear();
             
@@ -95,7 +98,7 @@ export class ThoughtGraph extends ForceGraph<TGNode, TGLink> {
                     node.links.forEach(link => this.highlightLinks.add(link));
             }
 
-            if(callback)
+            if(callback && node && previousNode)
                 callback(node, previousNode);
         }
 
@@ -210,16 +213,24 @@ const drawLabel: TGCanvasCustomRenderFn = options => {
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillStyle = "#cacaca";
+
     ctx.fillText(node.id, node.x, node.y + options.nodeRelSize * 2)
 }
 
-const showHighlightNode:TGCanvasCustomRenderFn = options => {
+const showHighlightNode:TGCanvasCustomRenderFn = (options:TGCanvasOptions) => {
     const { ctx, node, globalScale, nodeRelSize, hoverColor } = options;
     ctx.beginPath();
-    ctx.arc(node.x, node.y, nodeRelSize * 1.1, 0, Math.PI * 2, false);
+    
+    if(node.x && node.y)
+        ctx.arc(node.x, node.y, nodeRelSize * 1.1, 0, Math.PI * 2, false);
+
     ctx.lineWidth = 2 / globalScale;
-    ctx.strokeStyle = lightenColor(hoverColor, 0.3);
-    ctx.fillStyle = hoverColor;
+    
+    if(hoverColor){
+        ctx.strokeStyle = lightenColor(hoverColor, 0.3);
+        ctx.fillStyle = hoverColor;
+    }
+
     ctx.fill()
     ctx.stroke()
 }

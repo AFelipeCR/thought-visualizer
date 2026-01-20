@@ -60,10 +60,16 @@ function crossLinkNodes(data:TGData){
         const a = data.nodes.find(n => n.id == link.source);
         const b = data.nodes.find(n => n.id == link.target);
 
-        !a.links && (a.links = []);
-        !b.links && (b.links = []);
-        a.links.push(link);
-        b.links.push(link);
+        if(a){
+            !a.links && (a.links = []);
+            a.links.push(link);
+        }
+        
+        if(b){
+            !b.links && (b.links = []);
+            b.links.push(link);
+        }
+
     });
     return data;
 }
