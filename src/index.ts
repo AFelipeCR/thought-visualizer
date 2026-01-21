@@ -1,5 +1,6 @@
 import { OnClickTGListeners, TGNoteFile, TGStyle, ThoughtGraph } from "./tg-interfaces";
 import { parseVault } from "./parser";
+export * from './tg-interfaces';
 
 export class ThoughtVisualizer extends HTMLElement {
     private _graph: ThoughtGraph;
@@ -100,8 +101,6 @@ export class ThoughtVisualizer extends HTMLElement {
         return style;
     }
 }
-
-export * from './tg-interfaces';
 
 if (!customElements.get('thought-visualizer')) {
     customElements.define('thought-visualizer', ThoughtVisualizer);
